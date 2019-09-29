@@ -1,0 +1,14 @@
+html, body{
+    height: 100%;
+    overflow: hidden;
+}
+body, p, h1, h2, h3, h4, h5, h6, ul, li, ol{
+    margin: 0;
+}
+header, main, section, aside, footer, hgroup{
+    display: block;
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}

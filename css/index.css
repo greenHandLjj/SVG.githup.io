@@ -1,0 +1,15 @@
+@import './reset.css';
+@import './header.css';
+@import './main.css';
+@import './iconfont.css';
+
+#app{
+    height: 100%;
+}
+#app.night{
+    background-color: rgb(30, 30, 30);
+    color: rgb(212, 212, 212);
+}
+
+
+

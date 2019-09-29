@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SVG 在线编辑器</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <!-- 待定 -->
+    <!-- <link rel="shortcut icon" href="" type="image/x-icon"> -->
+</head>
+
+<body>
+
+    <!-- 主容器 -->
+    <div id="app" class="night">
+        <!-- 头部菜单 -->
+        <header>
+            <!-- 左侧导航 -->
+            <nav>
+                <!-- logo 待定 -->
+                <div class="logo">
+                    <a href="javascript: void(0);">
+                        <!-- <i class="iconfont icon-jingyu"></i> -->
+                        <img src="./images/logo.svg" alt="海豚">
+                    </a>
+                </div>
+                <div class="list">
+                    <a href="javascript: void(0);">文件</a>
+                    <div class="item-box hide">
+                        <a href="javascript: void(0);" class="available">
+                            <span>新建画布</span>
+                            <i class="code">ctrl+n</i>
+                        </a>
+                        <a href="javascript: void(0);" class="available">
+                            <span>导入图片</span>
+                            <!-- <i class="code">ctrl+v</i> -->
+                        </a>
+                        <a href="javascript: void(0);" class="disable">
+                            <span>导出图片</span>
+                            <!-- <i class="code">ctrl+v</i> -->
+                        </a>
+                        <a href="javascript: void(0);" class="disable">
+                            <span>保存</span>
+                            <i class="code">ctrl+s</i>
+                        </a>
+                        <hr>
+                        <a href="javascript: void(0);" class="available">
+                            <span>导出PNG格式</span>
+                            <!-- <i class="code">ctrl+v</i> -->
+                        </a>
+                    </div>
+                </div>
+                <div class="list">
+                    <a href="javascript: void(0);">编辑</a>
+                    <div class="item-box hide">
+                        <a href="javascript: void(0);" class="available">
+                            <span>撤销</span>
+                            <i class="code">ctrl+z</i>
+                        </a>
+                        <hr>
+                        <a href="javascript: void(0);" class="available">
+                            <span>复制</span>
+                            <i class="code">ctrl+c</i>
+                        </a>
+                        <a href="javascript: void(0);" class="available">
+                            <span>黏贴</span>
+                            <i class="code">ctrl+v</i>
+                        </a>
+                        <a href="javascript: void(0);" class="available">
+                            <span>删除</span>
+                            <i class="code">backspace</i>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- 应用主内容 -->
+        <main>
+            <!-- 左侧功能菜单 -->
+            <aside class="aside-left">
+                <div class="item selected" title="Select Tool (V)">
+                    <i class="iconfont icon-xuanzegongju"></i>
+                </div>
+                <div class="item" title="Pencil Tool (Q)">
+                    <i class="iconfont icon-bianjixiugaiqianbishuxie"></i>
+                </div>
+                <div class="item" title="Line Tool (L)">
+                    <i class="iconfont icon-straight"></i>
+                </div>
+                <div class="item" title="Square Tool (S)">
+                    <i class="iconfont icon-juxing"></i>
+                </div>
+                <div class="item" title="Circle Tool (C)">
+                    <i class="iconfont icon-tuoyuanxing"></i>
+                </div>
+                <div class="item" title="Path Tool (P)">
+                    <i class="iconfont icon-gangbigongju"></i>
+                </div>
+                <div class="item" title="Geometry Tool (G)">
+                    <i class="iconfont icon-chonghai-piaochong"></i>
+                </div>
+                <div class="item" title="Text Tool (T)">
+                    <i class="iconfont icon-text_tool"></i>
+                </div>
+                <div class="item" title="Dropper Tool (D)">
+                    <i class="iconfont icon-shiwu-xiguan"></i>
+                </div>
+            </aside>
+            <!-- 画布 -->
+            <section class="canvas-wrap">
+                
+                <div class="core">
+                    <!-- 坐标刻度 -->
+                    <canvas id="gauge"></canvas>
+
+                    <!-- Core -->
+                    <svg id="canvas" width="750" height="375">
+
+                    </svg>
+                    <!-- Core -->
+                </div>
+
+                <!-- 图形基本信息 -->
+                <div class="message">
+                    后续信息将存放于此
+                </div>
+
+            </section>
+            <!-- 右侧对象详情 -->
+            <section class="obj-details">
+                right
+            </section>
+        </main>
+    </div>
+
+
+    <script src="./js/index.js"></script>
+
+</body>
+</html>

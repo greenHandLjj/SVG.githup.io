@@ -1,0 +1,101 @@
+/* 头部样式 */
+header{
+    --head-wrap: 35px;
+    height: var(--head-wrap);
+    background-color: rgb(60, 60, 60); 
+}
+header nav{
+    padding-left: 50px;
+}
+header nav > div{
+    height: 100%;
+    float: left;
+    position: relative;
+}
+header nav > div > a{
+    display: block;
+    height: 100%;
+    padding: 0 15px;
+    line-height: var(--head-wrap);
+    font-size: 12px;
+    box-sizing: border-box;
+}
+header nav > div > a:focus{
+    outline: none;
+}
+header nav > div:hover,
+header nav > div.selected{
+    background-color: rgb(45, 45, 45);
+}
+/* logo 待定 (已完成) */
+
+/* iconfont */
+header nav > div.logo > a .iconfont{
+    font-size: 25px;
+    /* 幽灵空白节点 ~~~~~~ */
+    display: block;
+    /* 幽灵空白节点 ~~~~~~ */
+}
+
+/* img */
+header nav > div.logo > a img{
+    display: block;
+    max-height: var(--head-wrap);
+}
+/* logo 待定 (已完成) */
+
+/* 菜单子项 */
+header nav > div .item-box.show{
+    display: block;
+}
+header nav > div .item-box.hide{
+    display: none !important;
+}
+header nav > div .item-box{
+    position: absolute;
+    z-index: 999;
+    left: 0;
+    top: 100%;
+    background-color: rgb(30, 30, 30);
+    box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, .5);
+    padding: 10px 0;
+}
+header nav > div .item-box a{
+    font-size: 12px;
+    padding: 6px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    cursor: pointer;
+}
+header nav > div .item-box a span{
+    color: rgb(212, 212, 212);
+    white-space: nowrap;
+    margin-right: 20px;
+}
+header nav > div .item-box a i{
+    background-color: rgb(229, 229, 229);
+    font-style: normal; 
+    padding: 3px 6px;
+    color: rgb(45, 45, 45);
+    border-radius: 4px;
+    box-shadow: 1px 1px 2px rgb(0, 0, 0),
+                inset 1px 1px 2px rgb(255, 255, 255);
+}
+/* 可用 */
+header nav > div .item-box a.available:hover{
+    background-color: rgb(0, 124, 204);
+}
+/* 不可用 */
+header nav > div .item-box a.disable{
+    opacity: .5;
+    cursor: not-allowed;
+}
+/* 分割线 */
+header nav > div .item-box hr{
+    width: 94%;
+    height: 1px;
+    background-color: rgb(180, 180, 180);
+    border: none;
+}
+/* 菜单子项 */
