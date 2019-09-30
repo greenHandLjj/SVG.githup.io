@@ -74,6 +74,14 @@
                         </a>
                     </div>
                 </div>
+                <div class="list">
+                    <a href="javascript: void(0);">查看</a>
+                    <div class="item-box hide">
+                        <a href="javascript: void(0);" class="available">
+                           <span>画布信息</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
         </header>
 
@@ -114,24 +122,59 @@
                 
                 <div class="core">
                     <!-- 坐标刻度 -->
-                    <canvas id="gauge"></canvas>
+
+                    <canvas id="gauge-x"></canvas>
+                    <canvas id="gauge-y"></canvas>
 
                     <!-- Core -->
-                    <svg id="canvas" width="750" height="375">
+                    <div id="canvas">
+                        <svg width="750" height="375">
+                            <rect x="100" y="30" width="100" height="100" fill="hsl(240, 50%, 50%)"></rect>
+                            <polygon points="200 100, 300 170, 150 250" fill="hsl(300, 50%, 20%)" fill-opacity=".4"></polygon>
 
-                    </svg>
+                            <text x="650" y="365" style="font-size: 12px;">AUTHOR: 黎嘉健</text>
+                        </svg>
+                    </div>
                     <!-- Core -->
                 </div>
 
-                <!-- 图形基本信息 -->
+                <!-- 底部信息栏 -->
                 <div class="message">
-                    后续信息将存放于此
+                    <!-- 鼠标坐标x， y -->
+                    <div class="cursor-point">
+                        <span>X: 100, Y: 100</span>
+                    </div>
+                </div>
+
+                <!-- 悬浮窗口 用来描述当前选中对象信息 -->
+                <div class="float-window">
+                    <!-- 选中元素名称 -->
+                    <h1 class="selected-ele">Rect</h1>
+                    <!-- 元素详细信息 -->
+                    <!-- <div class="item-details">
+                        <div>X: 234</div>
+                        <div>Y: 57</div>
+                        
+                    </div> -->
+                    <!-- 关闭按钮 -->
+                    <i class="close"></i>
                 </div>
 
             </section>
             <!-- 右侧对象详情 -->
             <section class="obj-details">
-                right
+                <!-- 拖动改变大小 -->
+                <div class="move-posi"></div>
+                
+                <!-- canvas 页面描述 -->
+                <div class="details-can">
+                    <p>未命名</p>
+                </div>
+
+                <!-- 作者信息 待定 -->
+                <!-- <div class="author">
+                    <p>author: 黎嘉健</p>
+                </div> -->
             </section>
         </main>
     </div>

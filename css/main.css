@@ -39,22 +39,113 @@ main > .canvas-wrap .core{
     position: relative;
     flex: 1;
     overflow: hidden;
+    
+}
+/* 遮罩层 */
+main > .canvas-wrap .core::before{
+    content: "";
+    font-size: 12px;
+    text-align: center;
+    line-height: 15px;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: rgb(45, 45, 45);
+    z-index: 100;
+    left: 0;
+    top: 0;
+    box-sizing: border-box;
+    box-shadow: 2px 0px 10px 10px rgba(30, 30, 30, .3),
+                0px 2px 10px 10px rgba(30, 30, 30, .3); 
 }
 /* SVG 画布 */
 main > .canvas-wrap .core #canvas{
     position: absolute;
-    background-color: rgb(255, 255, 255);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
+main > .canvas-wrap .core #canvas > svg{
+    display: block;
+    background-color: rgb(255, 255, 255);
+}
 /* 刻度 */
-main > .canvas-wrap .core #gauge{
+main > .canvas-wrap .core #gauge-x,
+main > .canvas-wrap .core #gauge-y{
+    z-index: 99;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgb(45, 45, 45);
+}
+main > .canvas-wrap .core #gauge-x{
+    box-shadow: 0px 2px 10px rgba(30, 30, 30, .3);
+}
+main > .canvas-wrap .core #gauge-y{
+    box-shadow: 2px 0px 10px rgba(30, 30, 30, .3);
+}
+/* 下方详细信息 */
+main > .canvas-wrap .message{
+    background-color: rgb(0, 124, 204);
+    padding: 3px 10px;
+}
+main > .canvas-wrap .message .cursor-point{
+    font-size: 12px;
+}
 
+/* 悬浮窗口 */
+main > .canvas-wrap .float-window{
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    padding: 2px;
+    box-sizing: border-box;
+    background-color: rgb(37, 37, 38);
+    right: 0;
+    bottom: 23px;
+    z-index: 160;
+    box-shadow: 0px 0px 5px 2px rgba(0, 0, 38, .4);
+}
+main > .canvas-wrap .float-window .selected-ele{
+    text-align: center;
+    font-size: 14px;
+    margin-top: 5px;
+    /* padding-right: 20px; */
+}
+main > .canvas-wrap .float-window .item-details{
+
+}
+/* 关闭按钮 */
+main > .canvas-wrap .float-window .close{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 0;
+    top: 0;
+    background-color: #fff;
+    cursor: pointer;
 }
 
 /* 右侧对象详情 */
+main .obj-details.hide{
+    flex-basis: 0;
+    width: 0;
+    overflow: hidden;
+}
 main .obj-details{
+    position: relative;
+    z-index: 140;
+    padding: 10px;
     flex-basis: 180px;
     background-color: rgb(37, 37, 38);
+    transition: all .3s;
+}
+main .obj-details .move-posi{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: blueviolet;
+    cursor: ew-resize;
 }
