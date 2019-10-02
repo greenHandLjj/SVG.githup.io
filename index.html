@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     <meta charset="UTF-8">
@@ -80,6 +80,10 @@
                         <a href="javascript: void(0);" class="available">
                            <span>画布信息</span>
                         </a>
+                        <hr>
+                        <a href="javascript: void(0);" class="available">
+                            <span>开启辅助线</span>
+                         </a>
                     </div>
                 </div>
             </nav>
@@ -122,15 +126,20 @@
                 
                 <div class="core">
                     <!-- 坐标刻度 -->
-
                     <canvas id="gauge-x"></canvas>
                     <canvas id="gauge-y"></canvas>
+
+                    <!-- 辅助线 -->
+                    <div class="auxiliary-line">
+                        <div class="lineX"></div>
+                        <div class="lineY"></div>
+                    </div>
 
                     <!-- Core -->
                     <div id="canvas">
                         <svg width="750" height="375">
-                            <rect x="100" y="30" width="100" height="100" fill="hsl(240, 50%, 50%)"></rect>
-                            <polygon points="200 100, 300 170, 150 250" fill="hsl(300, 50%, 20%)" fill-opacity=".4"></polygon>
+                            <!-- <rect x="100" y="30" width="100" height="100" fill="hsl(240, 50%, 50%)"></rect>
+                            <polygon points="200 100, 300 170, 150 250" fill="hsl(300, 50%, 20%)" fill-opacity=".4"></polygon> -->
 
                             <text x="650" y="365" style="font-size: 12px;">AUTHOR: 黎嘉健</text>
                         </svg>
@@ -142,7 +151,7 @@
                 <div class="message">
                     <!-- 鼠标坐标x， y -->
                     <div class="cursor-point">
-                        <span>X: 100, Y: 100</span>
+                        <span>X: 0, Y: 0</span>
                     </div>
                 </div>
 
@@ -180,6 +189,11 @@
     </div>
 
 
+    <!-- config js -->
+    <script src="./js/config.js"></script>
+    <!-- drag js -->
+    <script src="./js/dragable.js"></script>
+    <!-- core js -->
     <script src="./js/index.js"></script>
 
 </body>

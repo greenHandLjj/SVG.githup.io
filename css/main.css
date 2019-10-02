@@ -7,6 +7,9 @@ main{
 main .aside-left{
     flex-basis: 50px;
     background-color: rgb(51, 51, 51);
+    position: relative;
+    z-index: 300;
+    box-shadow: 2px 30px 10px 10px rgba(30, 30, 30, .3);
 }
 main .aside-left > .item{
     position: relative;
@@ -69,6 +72,33 @@ main > .canvas-wrap .core #canvas > svg{
     display: block;
     background-color: rgb(255, 255, 255);
 }
+/* 辅助线 */
+.auxiliary-line.hide{
+    display: none;
+}
+.auxiliary-line > div{
+    position: absolute;
+    /* 层级不能太高, 得在刻度尺下 */
+    z-index: 50;
+    background-color: blueviolet;
+}
+.auxiliary-line > .lineX{
+    top: 100px;
+
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-image: linear-gradient(to right,blueviolet, rgb(0, 124, 204));
+}
+.auxiliary-line > .lineY{
+    left: 100px;
+
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    background-image: linear-gradient(blueviolet, rgb(0, 124, 204));
+}
+
 /* 刻度 */
 main > .canvas-wrap .core #gauge-x,
 main > .canvas-wrap .core #gauge-y{
@@ -129,16 +159,16 @@ main > .canvas-wrap .float-window .close{
 /* 右侧对象详情 */
 main .obj-details.hide{
     flex-basis: 0;
-    width: 0;
+    padding: 0;
+    padding-left: 2px;
     overflow: hidden;
 }
 main .obj-details{
     position: relative;
     z-index: 140;
     padding: 10px;
-    flex-basis: 180px;
+    width: 180px;
     background-color: rgb(37, 37, 38);
-    transition: all .3s;
 }
 main .obj-details .move-posi{
     position: absolute;
@@ -147,5 +177,6 @@ main .obj-details .move-posi{
     bottom: 0;
     width: 2px;
     background-color: blueviolet;
+    background-image: linear-gradient(blueviolet, rgb(0, 124, 204));
     cursor: ew-resize;
 }
