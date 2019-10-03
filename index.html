@@ -18,7 +18,7 @@
         <!-- 头部菜单 -->
         <header>
             <!-- 左侧导航 -->
-            <nav>
+            <nav class="navigation">
                 <!-- logo 待定 -->
                 <div class="logo">
                     <a href="javascript: void(0);">
@@ -29,11 +29,11 @@
                 <div class="list">
                     <a href="javascript: void(0);">文件</a>
                     <div class="item-box hide">
-                        <a href="javascript: void(0);" class="available">
+                        <a href="javascript: void(0);" class="available" data-handle="create-new-canvas">
                             <span>新建画布</span>
                             <i class="code">ctrl+n</i>
                         </a>
-                        <a href="javascript: void(0);" class="available">
+                        <a href="javascript: void(0);" class="available" data-handle="import-img">
                             <span>导入图片</span>
                             <!-- <i class="code">ctrl+v</i> -->
                         </a>
@@ -189,12 +189,56 @@
     </div>
 
 
+    <!-- tool js -->
+    <script src="./js/tool.js"></script>
     <!-- config js -->
     <script src="./js/config.js"></script>
     <!-- drag js -->
     <script src="./js/dragable.js"></script>
     <!-- core js -->
     <script src="./js/index.js"></script>
+    <!-- nav js -->
+    <script src="./js/nav.js"></script>
+
+    <script>
+        
+        /*********** 与本页面相关的脚本代码↓↓↓↓↓↓ *************/
+        
+        new DomDrag({
+            el: '.float-window',
+            boundary: '.core'
+        })
+
+        new Nav({
+            el: '.navigation'
+        })
+
+        /*********** 与本页面相关的脚本代码↑↑↑↑↑↑ *************/
+
+        // 测试区域
+        // let dom = document.querySelector('.float-window')
+        // 获取元素视觉可见的左侧、上侧边距
+        // function getPosition(dom) {
+        //     let parent = dom.parentElement
+        //     let x = dom.offsetLeft,
+        //         y = dom.offsetTop
+            
+        //     console.log(dom, y)
+
+        //     if(parent && parent !== document.body){
+        //         getPosition(parent)
+        //     }
+
+        //     return {
+        //         x,
+        //         y
+        //     }
+        // }
+
+        // getPosition(dom)
+
+
+    </script>
 
 </body>
 </html>

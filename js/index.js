@@ -63,11 +63,20 @@ let publicVar = {
             this.classList.remove('selected')
         }
 
-        e.stopPropagation && e.stopPropagation()
+
+        // e.stopPropagation && e.stopPropagation()
 
     }
 
-    document.addEventListener('mousedown', function () {
+    document.addEventListener('mousedown', function (e) {
+        // 重新更改函数， 解决事件冒泡问题
+        let arr
+        arr = Tool.getParentEl(e.target)
+
+        if( arr.find(item => item.nodeName === 'HEADER') ) {
+            return
+        }
+        
         if (lastList !== null) {
             lastList.classList
                 .remove('selected')
@@ -418,6 +427,6 @@ let publicVar = {
     }
 })();
 
-// 可拖拽悬浮窗口
+// 可拖拽悬浮窗口 已实现，后续小问题：根据窗口变化，该实例应作出响应
 
 
