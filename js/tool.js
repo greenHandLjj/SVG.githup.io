@@ -32,6 +32,7 @@
         return arr
     }
 
+    // 选择dom, 目前仅支持class, id, 标签名
     Tool.prototype.selectedDom = function(str) {
         let dom
         
@@ -44,6 +45,13 @@
         }
 
         return dom instanceof Element ? dom : dom[0] 
+    }
+
+    // 创建SVG元素, SVG是XML, 不能通过HTML方式进行修改和创建
+    Tool.prototype.createSvgEl = function(nodeName) {
+        let svgEl = document.createElementNS('http://www.w3.org/2000/svg', nodeName)
+
+        return svgEl
     }
 
     w.Tool = new Tool()

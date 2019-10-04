@@ -1,14 +1,3 @@
-// 接管全局变量, 各个区域之间, 公有变量存在于此
-let publicVar = {
-    // 坐标轴横纵原点坐标, 初始化
-    pointXZero: 0,
-    pointYZero: 0,
-    // 当前是否在拖动右边栏, 如果是, 需要禁止画布区的鼠标移动监测事件
-    isChangeRightBar: false,
-    // 画布区域需要监测宽度变化, reset 为函数
-    reset: null
-};
-
 // 导航菜单， 点击出子项
 (function () {
     let list = [...document.querySelectorAll('header nav .list')],
