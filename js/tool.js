@@ -21,15 +21,33 @@
     }
 
     // 获取除body以上的所有父节点
-    Tool.prototype.getParentEl = function(dom, arr = []) {
+    Tool.prototype.getParentEl = function(dom, arr = [], cb) {
         let parent = dom.parentElement
         
         arr.push(dom)
+
+        // 可选回调
+        cb && cb(parent)
+
         if(parent && parent !== document.body){
             this.getParentEl(parent, arr)
         }
     
         return arr
+    }
+
+    // 获取离自己最近的position ！== static 的元素
+    Tool.prototype.getRelativeParent = function(dom) {
+        let relativeEl = null, n = 0
+        this.getParentEl(dom, undefined, function(parent) {
+            if( window.getComputedStyle(parent, null).position !== 'static' ){
+                if(n === 0){
+                    relativeEl = parent
+                    n ++
+                }
+            }
+        })
+        return relativeEl || document.body
     }
 
     // 选择dom, 目前仅支持class, id, 标签名

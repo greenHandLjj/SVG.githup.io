@@ -2,6 +2,7 @@
 main{
     height: calc(100% - 35px);
     display: flex;
+    align-items: stretch;
 }
 /* 左侧功能菜单 */
 main .aside-left{
@@ -42,7 +43,7 @@ main > .canvas-wrap .core{
     position: relative;
     flex: 1;
     overflow: hidden;
-    
+    transition: all .5s;
 }
 /* 遮罩层 */
 main > .canvas-wrap .core::before{

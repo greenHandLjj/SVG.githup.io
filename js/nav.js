@@ -28,7 +28,7 @@ class Nav{
         // 如果找到了， 再触发相应函数
         if(el) {
             handle = el.getAttribute('data-handle')
-            this[handle] && this[handle]()
+            this[handle] && this[handle](el)
         }
     }
 
@@ -38,13 +38,10 @@ class Nav{
         file.type = 'file'
         // 限定上传类型
         file.accept = 'image/*'
-
-        // 触发文件窗口
-        file.click()
-
+        
+        // 信息加载完成后
         file.onchange = function(e) {
             let files, url, image, curWidth, curHeight, svgEl
-
             files = this.files[0]
             // this.files[0].type 文件类型
             // 图片可预览地址
@@ -69,7 +66,37 @@ class Nav{
             }
             image.src = url
         }
+        
+        // 触发文件窗口
+        file.click()
 
+        file.onerror = function(e) {
+            console.log('数据加载 - error')
+        }
+    }
+
+    // 切换辅助线状态， open or close
+    ['toggle-auxiliary-line-sataus'] (el) {
+        if(config.openAuxiliaryLine){ // 关闭
+            // 获取辅助线
+            let lineX = document.querySelector('.auxiliary-line .lineX'),
+            lineY = document.querySelector('.auxiliary-line .lineY')
+
+            el.innerText = '开启辅助线'
+            // 辅助线应该回到原位
+            lineX.style.top = publicVar.pointYZero + 'px'
+            lineY.style.left = publicVar.pointXZero + 'px'            
+
+        }else{
+            el.innerText = '关闭辅助线'   
+        }
+        config.openAuxiliaryLine = !config.openAuxiliaryLine
     }
 
 }
+
+
+/*
+    未解决bug
+        导入图片功能有时候，明明选中了文件并点击l确定， 但就是不触发change事件。
+*/

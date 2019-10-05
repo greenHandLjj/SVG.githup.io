@@ -33,9 +33,14 @@
                 .replace('show', 'hide')
         }
 
+        // 如果上一个和当前点击元素相等，并且当前元素需要隐藏 那么也应该禁用鼠标移入事件
+        if (lastList === this && !classList.contains('hide')) {
+            lock = false
+        } else {
+            lock = true
+        }
         // 重新记录上一个被选中元素
         lastList = this
-        lock = true
 
         // 是否隐藏
         if (classList.contains('hide')) {
@@ -62,10 +67,10 @@
         let arr
         arr = Tool.getParentEl(e.target)
 
-        if( arr.find(item => item.nodeName === 'HEADER') ) {
+        if (arr.find(item => item.nodeName === 'HEADER')) {
             return
         }
-        
+
         if (lastList !== null) {
             lastList.classList
                 .remove('selected')
@@ -158,16 +163,16 @@
             gaugeYCtx.lineTo(gaugeYW, pointYZero + i * 50 - 0.5)
 
             // Y 
-            gaugeYCtx.moveTo(gaugeYW * 0.8, pointYZero + i * 50 + 10 - 0,5)
+            gaugeYCtx.moveTo(gaugeYW * 0.8, pointYZero + i * 50 + 10 - 0, 5)
             gaugeYCtx.lineTo(gaugeYW, pointYZero + i * 50 + 10 - 0.5)
 
-            gaugeYCtx.moveTo(gaugeYW * 0.65, pointYZero + i * 50 + 20 - 0,5)
+            gaugeYCtx.moveTo(gaugeYW * 0.65, pointYZero + i * 50 + 20 - 0, 5)
             gaugeYCtx.lineTo(gaugeYW, pointYZero + i * 50 + 20 - 0.5)
 
-            gaugeYCtx.moveTo(gaugeYW * 0.8, pointYZero + i * 50 + 30) - 0,5
+            gaugeYCtx.moveTo(gaugeYW * 0.8, pointYZero + i * 50 + 30) - 0, 5
             gaugeYCtx.lineTo(gaugeYW, pointYZero + i * 50 + 30 - 0.5)
 
-            gaugeYCtx.moveTo(gaugeYW * 0.65, pointYZero + i * 50 + 40 - 0,5)
+            gaugeYCtx.moveTo(gaugeYW * 0.65, pointYZero + i * 50 + 40 - 0, 5)
             gaugeYCtx.lineTo(gaugeYW, pointYZero + i * 50 + 40 - 0.5)
             // Y
 
@@ -248,9 +253,11 @@
         lineX = document.querySelector('.auxiliary-line .lineX'),
         lineY = document.querySelector('.auxiliary-line .lineY')
 
-    // 定义默认值
-    lineX.style.top = publicVar.pointYZero + 'px'
-    lineY.style.left = publicVar.pointXZero + 'px'
+    window.addEventListener('resize', () => {
+        // 定义默认值
+        lineX.style.top = publicVar.pointYZero + 'px'
+        lineY.style.left = publicVar.pointXZero + 'px'
+    })
 
     // 为什么给document 绑定, 因为鼠标移速可能过快, 屏幕刷新频率跟不上, 得出错误的结果, !!!!此处开发遇到瓶颈
     // document.addEventListener('mousemove', getPosition)
@@ -273,10 +280,10 @@
         changePoint(client)
 
         // 检测配置是否开启
-        if(config.openAuxiliaryLine){
+        if (config.openAuxiliaryLine) {
             changeLine(client)
         }
-        
+
         // 事件冒泡不能阻止....
         // e.stopPropagation && e.stopPropagation()
     }

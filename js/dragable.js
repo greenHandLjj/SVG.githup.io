@@ -5,6 +5,8 @@
  *      2. 检测鼠标移动
  *      3. 鼠标抬起, 解绑事件
  *      4. 边界检测, 如果有传递边界元素, 那么拖拽范围将不可超过边界
+ *      5. 边界元素宽高监听, MutationObserver Transitionend
+ *      6. px 如何转成百分比， 
  *      
  *      SVG 元素
  *          后续...
@@ -15,8 +17,12 @@ class DomDrag {
     constructor ({el, boundary}) {
         this.el = Tool.selectedDom(el)
 
+        // 其相对定位的父级元素, 如果没有找到， 那么相当于默认对body
+        this.relativeParent = Tool.getRelativeParent(this.el)
+        this.relativeParentWidth = this.relativeParent.offsetWidth
+        this.relativeParentHeight = this.relativeParent.offsetHeight
+        
         // this.el.style.transition = 'left 0.05s linear, top 0.05s linear'
-
         // 元素宽高， 用于边界检测判定
         this.elW = this.el.offsetWidth
         this.elH = this.el.offsetHeight
@@ -25,6 +31,7 @@ class DomDrag {
 
         // 边界元素, 如果传递false, 将不进行边界检测， 否则默认值相对于 window
         this.boundary = typeof boundary === "string" ? Tool.selectedDom(boundary) : window
+
         // 边界元素宽度， 同样用于边界检测
         if(this.boundary === window){
             this.boundaryW = window.innerWidth
@@ -34,6 +41,14 @@ class DomDrag {
             this.boundaryT = 0
             this.boundaryL = 0
 
+            window.addEventListener('resize', () => {
+                this.boundaryW = window.innerWidth
+                this.boundaryH = window.innerHeight
+
+                // 窗口改变，重新获取定位父元素的宽高
+                this.relativeParentWidth = this.relativeParent.offsetWidth
+                this.relativeParentHeight = this.relativeParent.offsetHeight
+            })
         }else if(this.boundary !== false){
             this.boundaryW = this.boundary.offsetWidth
             this.boundaryH = this.boundary.offsetHeight
@@ -42,10 +57,34 @@ class DomDrag {
             // 获取该边界元素距离顶部和左边的距离
             this.boundaryT = offset.top
             this.boundaryL = offset.left
+
+            // 添加过渡
+            // this.boundary.style.transition = 'all 1s'
+            
+            // this.boundary.addEventListener('transitionend', () => {
+            //     console.log(1)
+            // }, false)
+            // 监听不到自适应宽度
+            // let observer = new MutationObserver(function(mutations) {
+            //     console.log(mutations)
+            // })
+
+            // observer.observe(this.boundary, {
+            //     attributes: true,
+            //     attributeFilter: ['style']
+            // })
+
         }
 
         this.move = e => {
             let el = this.el
+
+
+            // 最差的办法， 暂时使用
+            this.boundaryW = this.boundary.offsetWidth
+            this.boundaryH = this.boundary.offsetHeight
+            this.relativeParentWidth = this.relativeParent.offsetWidth
+            this.relativeParentHeight = this.relativeParent.offsetHeight
 
             /*
                 边界检测计算公式：
@@ -66,20 +105,21 @@ class DomDrag {
                 // 测试公式 x >= -50 && x + this.elW + 50 <= this.boundaryW
                 // X 轴边界判定
                 if(x < (-this.elL) + this.boundaryL) {
-                    el.style.left = `${-this.elL + this.boundaryL}px`
+                    el.style.left = `${ ((-this.elL + this.boundaryL) / this.relativeParentWidth * 100).toFixed(2) }%`
                 }else if(x + this.elW + this.elL > this.boundaryW + this.boundaryL) {
-                    el.style.left = `${this.boundaryW + this.boundaryL - this.elL - this.elW}px`
+                    el.style.left = `${ ((this.boundaryW + this.boundaryL - this.elL - this.elW) / this.relativeParentWidth * 100).toFixed(2) }%`
                 }else{
-                    el.style.left = `${x}px`
+                    // px 如何转成 百分比, 计算公式: (x / 定位父级宽 * 100) 保留两位有限小数, y同理
+                    el.style.left = `${(x / this.relativeParentWidth * 100).toFixed(2)}%`
                 }
 
                 // Y轴边界判定
                 if(y < (-this.elT) + this.boundaryT) {
-                    el.style.top = `${-this.elT + this.boundaryT}px`
+                    el.style.top = `${ ((-this.elT + this.boundaryT) / this.relativeParentHeight * 100).toFixed(2) }%`
                 }else if(y + this.elH + this.elT > this.boundaryH + this.boundaryT) {
-                    el.style.top = `${this.boundaryH + this.boundaryT - this.elT - this.elH}px`
+                    el.style.top = `${ ((this.boundaryH + this.boundaryT - this.elT - this.elH) / this.relativeParentHeight * 100).toFixed(2) }%`
                 }else{
-                    el.style.top = `${y}px`
+                    el.style.top = `${(y / this.relativeParentHeight * 100).toFixed(2)}%`
                 }
                 
            }
@@ -98,6 +138,10 @@ class DomDrag {
     // 按下
     down(e) {
         let el = this.el
+        // 如果点击的是子元素， 不应该进行拖拽, 暂定
+        if(e.target !== el) {
+            return
+        }
         // 记录按下坐标
         this.downX = e.clientX
         this.downY = e.clientY
