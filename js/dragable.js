@@ -139,9 +139,9 @@ class DomDrag {
     down(e) {
         let el = this.el
         // 如果点击的是子元素， 不应该进行拖拽, 暂定
-        if(e.target !== el) {
-            return
-        }
+        // if(e.target !== el) {
+        //     return
+        // }
         // 记录按下坐标
         this.downX = e.clientX
         this.downY = e.clientY

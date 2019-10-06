@@ -43,7 +43,7 @@ main > .canvas-wrap .core{
     position: relative;
     flex: 1;
     overflow: hidden;
-    transition: all .5s;
+    /* transition: all .5s; */
 }
 /* 遮罩层 */
 main > .canvas-wrap .core::before{
@@ -73,6 +73,15 @@ main > .canvas-wrap .core #canvas > svg{
     display: block;
     background-color: rgb(255, 255, 255);
 }
+
+/* 默认设置 */
+main > .canvas-wrap .core #canvas > svg .system-rect{
+    /* parseInt('ab', 16) 以目标进制为基底, 转换成10进制 */
+    fill: hsla(240, 50%, 50%, .4);
+    stroke: blueviolet;
+    stroke-dasharray: 5 5;
+}
+
 /* 辅助线 */
 .auxiliary-line.hide{
     display: none;

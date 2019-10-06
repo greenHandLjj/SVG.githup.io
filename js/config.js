@@ -55,5 +55,19 @@ const publicVar = new Proxy(truePublicVar, {
 
 let config = localStorage.getItem('config') || {
     // 是否开启辅助线
-    openAuxiliaryLine: false
+    openAuxiliaryLine: false,
+    // canvas 页面功能相关配置, 标记当前状态, 是准备选中, 还是创建矩形...
+    /*
+        状态解释:
+            Select      对应选择 --- 默认值
+            Pencil      对应画笔
+            Line        对应绘制单条线段
+            Square      对应绘制方形
+            Circle      对应绘制圆形
+            Path        对应多路径绘制(类似PS钢笔工具)
+            Geometry    对应几何绘制(功能暂定...)
+            Text        对应文本绘制
+            Dropper     对应吸管吸色
+    */
+    CanvasStatus: 'Select'
 }

@@ -424,5 +424,44 @@
 })();
 
 // 可拖拽悬浮窗口 已实现，后续小问题：根据窗口变化，该实例应作出响应
+// -------已通过dragable.js 实现
 
+// 主内容左侧功能栏 状态切换
+(function () {
+    let asideItem = [...document.querySelectorAll('.aside-left > .item')],
+        // 上一个选中元素, (第一个为默认选中) 
+        lastIndex = 0,
+        // 上一个状态
+        lastStatus = asideItem[lastIndex].getAttribute('data-status')
 
+    asideItem.forEach((item, index) => {
+        item.addEventListener('mousedown', function (e) {
+
+            toggleStatus.call(this, e, index)
+        }, false)
+    })
+
+    function toggleStatus(e, index) {
+        let lastItem = asideItem[lastIndex],
+            nowStatus = this.getAttribute('data-status')
+
+        // 小处理, 如果点的元素是一个, 那么不执行多余操作
+        if (this === lastItem) {
+            // ... do something
+            return
+        }
+
+        // 去除上一个类名
+        lastItem.classList.remove('selected')
+        // 当前元素添加
+        this.classList.add('selected')
+
+        // 更改全局配置文件信息
+        config.CanvasStatus = nowStatus
+
+        // 老规矩, 替换信息
+        lastIndex = index
+        lastStatus = nowStatus
+
+    }
+})()
