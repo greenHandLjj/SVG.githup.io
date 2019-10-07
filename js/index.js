@@ -423,12 +423,14 @@
     }
 })();
 
-// 可拖拽悬浮窗口 已实现，后续小问题：根据窗口变化，该实例应作出响应
+// 可拖拽悬浮窗口 已实现，后续小问题：根据窗口变化，该实例应作出响应(完成)
 // -------已通过dragable.js 实现
 
 // 主内容左侧功能栏 状态切换
 (function () {
     let asideItem = [...document.querySelectorAll('.aside-left > .item')],
+        // 更改鼠标样式
+        core = document.querySelector('main > .canvas-wrap .core'),
         // 上一个选中元素, (第一个为默认选中) 
         lastIndex = 0,
         // 上一个状态
@@ -436,7 +438,6 @@
 
     asideItem.forEach((item, index) => {
         item.addEventListener('mousedown', function (e) {
-
             toggleStatus.call(this, e, index)
         }, false)
     })
@@ -445,7 +446,7 @@
         let lastItem = asideItem[lastIndex],
             nowStatus = this.getAttribute('data-status')
 
-        // 小处理, 如果点的元素是一个, 那么不执行多余操作
+        // 小处理, 如果点的元素是同一个, 那么不执行多余操作
         if (this === lastItem) {
             // ... do something
             return
@@ -463,5 +464,51 @@
         lastIndex = index
         lastStatus = nowStatus
 
+        // 鼠标样式
+        if (lastStatus === 'Line') {
+            core.style.cursor = 'crosshair'
+        } else if (lastStatus === 'Text') {
+            core.style.cursor = 'text'
+        } else if (lastStatus === 'Pencil') {
+            // 暂定
+            core.style.cursor = 'crosshair'
+        } else {
+            core.style.cursor = 'default'
+        }
+    }
+
+    // 键盘事件, 快捷键设置
+    document.onkeydown = function (e) {
+        switch (e.code) {
+            case 'KeyV':
+                    toggleStatus.call(asideItem[0], null, 0)
+                break
+            case 'KeyQ':
+                    toggleStatus.call(asideItem[1], null, 1)
+                break
+            case 'KeyL':
+                    toggleStatus.call(asideItem[2], null, 2)
+                break
+            case 'KeyS':
+                    toggleStatus.call(asideItem[3], null, 3)
+                break
+            case 'KeyC':
+                    toggleStatus.call(asideItem[4], null, 4)
+                break
+            case 'KeyP':
+                    toggleStatus.call(asideItem[5], null, 5)
+                break
+            case 'KeyG':
+                    toggleStatus.call(asideItem[6], null, 6)
+                break
+            case 'KeyT':
+                    toggleStatus.call(asideItem[7], null, 7)
+                break
+            case 'KeyD':
+                    toggleStatus.call(asideItem[8], null, 8)
+                break
+        }
+
+        // e.preventDefault()
     }
 })()

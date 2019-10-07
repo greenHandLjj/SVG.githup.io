@@ -45,6 +45,10 @@ main > .canvas-wrap .core{
     overflow: hidden;
     /* transition: all .5s; */
 }
+/* 鼠标样式 */
+main > .canvas-wrap .core{
+    /* cursor: url('../images/logo.svg'); */
+}
 /* 遮罩层 */
 main > .canvas-wrap .core::before{
     content: "";
