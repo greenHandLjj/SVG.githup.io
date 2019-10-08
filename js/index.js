@@ -481,34 +481,158 @@
     document.onkeydown = function (e) {
         switch (e.code) {
             case 'KeyV':
-                    toggleStatus.call(asideItem[0], null, 0)
+                toggleStatus.call(asideItem[0], null, 0)
                 break
             case 'KeyQ':
-                    toggleStatus.call(asideItem[1], null, 1)
+                toggleStatus.call(asideItem[1], null, 1)
                 break
             case 'KeyL':
-                    toggleStatus.call(asideItem[2], null, 2)
+                toggleStatus.call(asideItem[2], null, 2)
                 break
             case 'KeyS':
-                    toggleStatus.call(asideItem[3], null, 3)
+                toggleStatus.call(asideItem[3], null, 3)
                 break
             case 'KeyC':
-                    toggleStatus.call(asideItem[4], null, 4)
+                toggleStatus.call(asideItem[4], null, 4)
                 break
             case 'KeyP':
-                    toggleStatus.call(asideItem[5], null, 5)
+                toggleStatus.call(asideItem[5], null, 5)
                 break
             case 'KeyG':
-                    toggleStatus.call(asideItem[6], null, 6)
+                toggleStatus.call(asideItem[6], null, 6)
                 break
             case 'KeyT':
-                    toggleStatus.call(asideItem[7], null, 7)
+                toggleStatus.call(asideItem[7], null, 7)
                 break
             case 'KeyD':
-                    toggleStatus.call(asideItem[8], null, 8)
+                toggleStatus.call(asideItem[8], null, 8)
                 break
         }
 
         // e.preventDefault()
     }
 })()
+
+/*
+template: 
+    <div class="item">
+        <div class="preview"></div>
+        <div class="des"><p>RECT</p></div>
+        <div class="clock">
+            <i class="iconfont icon-xuanzegongju"></i>
+        </div>
+    </div>
+*/
+// 对svg实行DOM tree监听
+let svg = document.querySelector('#canvas svg'),
+    // 需要插入元素
+    list = document.querySelector('main .picture-layer .list'),
+    observer = new MutationObserver(function (mutationList) {
+        let addedNodes = mutationList[0].addedNodes,
+            firstNode,
+            firstNodeName
+        
+        if(addedNodes.length > 0){ // 添加节点的操作
+            // 因为有些元素在创建完后就销毁了， 所以会触发两次该函数监听 mutationList[0].removedNodes
+            firstNode = addedNodes[0],
+            firstNodeName = firstNode.nodeName.toUpperCase()
+            // 并不是所有的元素都需要插入, 一些内置的元素不需要插入, 用完即扔
+            if (firstNode.classList.contains('system-rect')) { return }
+
+            // 没有子节点
+            if(list.childElementCount === 0){
+                list.appendChild(createDom({
+                    nodeName: firstNodeName,
+                    rel: firstNode
+                }))
+            }else{
+                // 后面创建的元素层级应该是高于前者
+                list.insertBefore(createDom({
+                    nodeName: firstNodeName,
+                    rel: firstNode
+                }), list.children[0])
+            }
+            
+        }
+
+    })
+
+function createDom({ nodeName, rel } = {
+    nodeName: '匿名元素',
+    rel: Tool.createSvgEl('rect')
+}) {
+
+    let clock,
+        item = document.createElement('div'),
+        preview = item.cloneNode(),
+        svg = Tool.createSvgEl('svg'),
+        html = `<div class="des"><p contentEditable="true">${nodeName}</p></div>
+                <div class="clock" title="delete">
+                    <i class="iconfont icon-iconset0212"></i>
+                </div>`
+
+    svg.setAttribute('width', 30)
+    svg.setAttribute('height', 30)
+    svg.setAttribute('viewBox', '0, 0, 750, 375')
+    // 插入节点
+    svg.appendChild(rel.cloneNode(true))
+    preview.appendChild(svg)
+    item.appendChild(preview)
+    
+    preview.classList.add('preview')
+    item.classList.add('item')
+    item.innerHTML += html
+    // 自定义属性, 挂载svg元素引用 
+    item.svgRel = rel
+
+    // 截取dom
+    clock = item.getElementsByClassName('clock')[0]
+
+    // 注册事件处理函数
+    bindEvent(item, clock)
+
+    return item
+}
+// 遇到bug, 不知原因            原因已查明
+function bindEvent(item, clock) {
+    let svgRel, cloneItem
+
+    function enter() {
+        // 先保存一份当前对象引用
+        cloneItem = this
+        svgRel = this.svgRel
+        if(svgRel.nodeName === 'polyline'){
+            svgRel.classList.add('active-stroke')
+        }else{
+            svgRel.classList.add('active-fill')
+        }
+    }
+
+    function leave() {
+        if(svgRel.nodeName === 'polyline'){
+            svgRel.classList.remove('active-stroke')
+        }else{
+            svgRel.classList.remove('active-fill')
+        }
+    }
+    
+    function down() {
+        svgRel.remove()
+        // 闭包
+        cloneItem.remove()
+    }
+
+    // 鼠标移入移出
+    item.addEventListener('mouseenter', enter, false)
+    item.addEventListener('mouseleave', leave, false)
+    // 点击事件
+    // item.addEventListener('mousedown', , false)
+
+    // 点击删除
+    clock.addEventListener('mousedown', down, false)
+}
+
+observer.observe(svg, {
+    childList: true
+})
+

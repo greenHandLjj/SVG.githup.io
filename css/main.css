@@ -77,6 +77,14 @@ main > .canvas-wrap .core #canvas > svg{
     display: block;
     background-color: rgb(255, 255, 255);
 }
+/* 被选中元素样式 */
+main > .canvas-wrap .core #canvas > svg .active-fill{
+    fill: rgba(17, 228, 105, .6);
+    stroke: #00796B;
+}
+main > .canvas-wrap .core #canvas > svg .active-stroke{
+    stroke: #00796B;
+}
 
 /* 默认设置 */
 main > .canvas-wrap .core #canvas > svg .system-rect{
@@ -184,6 +192,14 @@ main .obj-details{
     width: 180px;
     background-color: rgb(37, 37, 38);
 }
+main .obj-details p{
+    white-space: nowrap;
+}
+main .obj-details > div:nth-child(n + 3) {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgb(0, 124, 204);
+}
 main .obj-details .move-posi{
     position: absolute;
     top: 0;
@@ -195,4 +211,72 @@ main .obj-details .move-posi{
     background-color: blueviolet;
     background-image: linear-gradient(blueviolet, rgb(0, 124, 204));
     cursor: ew-resize;
+}
+main .picture-layer{
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgb(0, 124, 204);
+}
+main .picture-layer > P{
+    margin-bottom: 10px;
+}
+main .picture-layer .list{
+    max-height: 200px;
+    overflow-y: scroll;
+    background-color: #1f1d1d;
+}
+main .picture-layer .list::-webkit-scrollbar{
+    width: 0px;
+}
+main .picture-layer .list .item{
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    margin:0 0 10px;
+    transition: background-color .4s;
+}
+main .picture-layer .list .item:last-child{
+    margin-bottom: 0px;
+}
+main .picture-layer .list .item:hover{
+    background-color: rgb(10, 10, 10);;
+}
+main .picture-layer .list .item .preview{
+    width: 30px;
+    height: 30px;
+    background-color: #f5f5f5;
+    margin:0 10px;
+}
+main .picture-layer .list .item .des{
+    overflow: hidden;
+    flex: 1;
+    position: relative;
+}
+/* main .picture-layer .list .item .des::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0px 0px 0px 3px rgba(255, 255, 255, 1),
+                ;
+} */
+main .picture-layer .list .item .des p{
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+main .picture-layer .list .item .clock{
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+/* 文本输入时， 生成的textarea */
+#svg-p{
+    position: absolute;
+    /* width: 200px; */
+    outline: 1px solid blueviolet;
+    background-color: rgba(0, 0, 0, 0);
 }

@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="./css/index.css">
     <!-- 待定 -->
     <!-- <link rel="shortcut icon" href="" type="image/x-icon"> -->
+    <!-- 暂时采用外链 -->
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_1441720_6refpwdqrfb.css" >
 </head>
 
 <body>
@@ -78,12 +80,12 @@
                     <a href="javascript: void(0);">查看</a>
                     <div class="item-box hide">
                         <a href="javascript: void(0);" class="available">
-                           <span>画布信息</span>
+                            <span>画布信息</span>
                         </a>
                         <hr>
                         <a href="javascript: void(0);" class="available" data-handle='toggle-auxiliary-line-sataus'>
                             <span>开启辅助线</span>
-                         </a>
+                        </a>
                     </div>
                 </div>
             </nav>
@@ -123,7 +125,7 @@
             </aside>
             <!-- 画布 -->
             <section class="canvas-wrap">
-                
+
                 <div class="core">
                     <!-- 坐标刻度 -->
                     <canvas id="gauge-x"></canvas>
@@ -144,6 +146,7 @@
                             <!-- <polyline points="0 0, 10 10, 30, 40, 500 10" stroke="#000" fill="none" ></polyline> -->
                             <!-- <circle cx='100' cy='100' r='40'></circle>
                             <ellipse cx="150" cy='200' rx='10' ry='40'></ellipse> -->
+                            <!-- <text x='0' y='100'>asfas</text> -->
                         </svg>
                     </div>
                     <!-- Core -->
@@ -163,7 +166,7 @@
                     <h1 class="selected-ele">Rect</h1>
                     <!-- 元素详细信息 -->
                     <div class="item-details">
-                        
+
                     </div>
                     <!-- 关闭按钮 -->
                     <i class="close"></i>
@@ -174,16 +177,30 @@
             <section class="obj-details">
                 <!-- 拖动改变大小 -->
                 <div class="move-posi"></div>
-                
+
                 <!-- canvas 页面描述 -->
                 <div class="details-can">
                     <p>未命名</p>
                 </div>
 
+                <!-- 图层 -->
+                <div class="picture-layer">
+                    <p>图层</p>
+                    <div class="list">
+                        <!-- <div class="item">
+                            <div class="preview"></div>
+                            <div class="des"><p>RECTRECTRECTRECT</p></div>
+                            <div class="clock">
+                                <i class="iconfont icon-iconset0212"></i>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+
                 <!-- 作者信息 待定 -->
-                <!-- <div class="author">
-                    <p>author: 黎嘉健</p>
-                </div> -->
+                <div class="author">
+                    <p>开发者</p>
+                </div>
             </section>
         </main>
     </div>
@@ -202,9 +219,9 @@
     <script src="./js/mspaint.js"></script>
 
     <script>
-        
+
         /*********** 与本页面相关的脚本代码↓↓↓↓↓↓ *************/
-        
+
         new DomDrag({
             el: '.float-window',
             boundary: '.core'
@@ -223,7 +240,7 @@
         //     let parent = dom.parentElement
         //     let x = dom.offsetLeft,
         //         y = dom.offsetTop
-            
+
         //     console.log(dom, y)
 
         //     if(parent && parent !== document.body){
@@ -237,7 +254,7 @@
         // }
 
         // getPosition(dom)
-            
+
         // let svgE = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
         // // svgE.setAttribute('x', 0)
         // // svgE.setAttribute('y', 0)
@@ -254,8 +271,17 @@
         // }
         // publicVar.canvas.appendChild(svgE)
 
+        // let svg = document.querySelector('svg')
+        // let observer = new MutationObserver(function(mutationList) {
+        //     console.log(mutationList)
+        // })
+
+        // observer.observe(svg, {
+        //     childList: true
+        // })
 
     </script>
 
 </body>
+
 </html>

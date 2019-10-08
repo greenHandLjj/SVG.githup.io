@@ -52,7 +52,8 @@
                 // handel start
                 this[status]({
                     curX,
-                    curY
+                    curY,
+                    e
                 })
             })
         }
@@ -61,19 +62,19 @@
         Select({ curX, curY } = {}) {
             let move, up,
                 self = this,
+                isMove = 0,
                 virtualSvg = Tool.createSvgEl('rect')
 
             virtualSvg.setAttribute('x', curX)
             virtualSvg.setAttribute('y', curY)
             virtualSvg.setAttribute('class', 'system-rect')
 
-            publicVar.canvas.appendChild(virtualSvg)
-
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
-
+                // 标记已经移动, 可以创建节点
+                isMove ++
                 // 具体思路, 请滑至底部
                 if (newX > curX) {
                     // console.log(curX, newX)
@@ -97,6 +98,11 @@
                     virtualSvg.setAttribute('height', curY - newY)
                 }
 
+                // 只触发一次
+                if(isMove === 1){
+                    publicVar.canvas.appendChild(virtualSvg) 
+                }
+
             }
 
             up = function (e) {
@@ -114,23 +120,28 @@
         Pencil({ curX, curY } = {}) {
             let move, up,
                 self = this,
+                isMove = 0,
                 polyline = Tool.createSvgEl('polyline'),
                 points = `${curX} ${curY}` // 起点
 
             polyline.setAttribute('points', points)
             polyline.setAttribute('stroke', '#000')
             polyline.setAttribute('fill', 'none')
-            // 插入节点
-            publicVar.canvas.appendChild(polyline)
 
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
 
+                isMove ++
                 points = polyline.getAttribute('points')
                 points += `, ${newX} ${newY}`
                 polyline.setAttribute('points', points)
+
+                if(isMove === 1){
+                    // 插入节点
+                    publicVar.canvas.appendChild(polyline)
+                }
             }
 
             up = function (e) {
@@ -146,6 +157,7 @@
         Line({ curX, curY } = {}) {
             let move, up,
                 self = this,
+                isMove = 0,
                 line = Tool.createSvgEl('line')
 
             line.setAttribute('x1', curX)
@@ -154,15 +166,19 @@
             line.setAttribute('x2', curX)
             line.setAttribute('y2', curY)
             line.setAttribute('stroke', '#000')
-            // 插入节点
-            publicVar.canvas.appendChild(line)
 
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
+                isMove ++
                 line.setAttribute('x2', newX)
                 line.setAttribute('y2', newY)
+
+                if(isMove === 1){
+                    // 插入节点
+                    publicVar.canvas.appendChild(line)
+                }
             }
 
             up = function (e) {
@@ -179,21 +195,21 @@
         Square({ curX, curY } = {}) {
             let move, up,
                 self = this,
+                isMove = 0,
                 rect = Tool.createSvgEl('rect')
 
             rect.setAttribute('x', curX)
             rect.setAttribute('y', curY)
             // 默认不填充, 后面需要填充变量
-            rect.setAttribute('fill', 'none')
+            rect.setAttribute('fill', 'rgba(0, 0, 0, 0)')
             rect.setAttribute('stroke', '#000')
-
-            publicVar.canvas.appendChild(rect)
 
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
 
+                isMove ++
                 // 具体思路, 请滑至底部
                 if (newX > curX) {
                     // console.log(curX, newX)
@@ -217,6 +233,11 @@
                     rect.setAttribute('height', curY - newY)
                 }
 
+                if(isMove === 1){
+                    // 插入节点
+                    publicVar.canvas.appendChild(rect)
+                }
+
             }
 
             up = function (e) {
@@ -231,6 +252,7 @@
         // Circle (圆)
         Circle({ curX, curY } = {}) {
             let move, up, keyDown, keyUp,
+                isMove = 0,
                 self = this,
                 ctrl = false, // 键盘事件
                 shift = false, // 键盘事件
@@ -242,9 +264,7 @@
             ellipse.setAttribute('stroke', '#000')
             // ellipse.setAttribute('cx', curX)
             // ellipse.setAttribute('cy', curY)
-            // 节点插入
-            publicVar.canvas.appendChild(ellipse)
-
+            
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
@@ -253,6 +273,7 @@
                 
                 cx = Math.abs(newX) - Math.abs(curX)
                 cy = Math.abs(newY) - Math.abs(curY)
+                isMove ++
 
                 if(shift){ // 只有画正圆的时候才会计算, 下面计算公式依据勾股定理
                     ry = rx = Math.sqrt( Math.pow((curX + cx / 2) - newX, 2) + Math.pow((curY + cy / 2) - newY, 2) )
@@ -287,6 +308,11 @@
 
                     ellipse.setAttribute('cy', curY)
                     ellipse.setAttribute('ry', ry * 2)
+                }
+
+                if(isMove === 1){
+                    // 插入节点
+                    publicVar.canvas.appendChild(ellipse)
                 }
 
             }
@@ -350,8 +376,67 @@
         }
 
         // Text (文本)
-        Text({ curX, curY } = {}) {
+        Text({ curX, curY, e } = {}) {
+            let keydown, textMousedown,
+                reg = /g/i,
+                self = this,
+                p = document.createElement('p'),
+                g = Tool.createSvgEl('g')
 
+            // 判断页面是否含有该标签
+            if(document.querySelector('#svg-p') !== null){
+                return
+            }
+
+            p.id = 'svg-p'
+            // 可编辑
+            p.contentEditable = true
+            p.style.color = '#000'
+            p.style.minWidth = '10px'
+            p.style.minHeight = p.style.fontSize = '20px'
+            p.style.top = `${curY + publicVar.pointYZero - 10}px`
+            p.style.left = `${curX + publicVar.pointXZero}px`
+            // 插入节点
+            this.el.appendChild(p)
+            // 自动聚焦, 插入节点竟然存在延迟, DOM还未渲染完成该节点, 就触发focus, 不起作用, 所以延迟执行
+            setTimeout(() => {
+                p.focus()
+            }, 10);
+
+            // 为什么用keydown，因为要阻止document原本绑定的事件
+            keydown = function(e) {
+                // this.innerText                
+                e.stopPropagation()
+            }
+
+            // 截取, 创建, 插入, 删除 
+            textMousedown = function(e) {
+                let text = Tool.createSvgEl('text'),
+                    str = p.innerText
+                // 设置属性
+                text.style.fontSize = '20px'
+                text.setAttribute('fill', '#000')
+                text.setAttribute('x', curX)
+                text.setAttribute('y', curY + 10)
+                // innerText 不起作用
+                text.innerHTML = str
+
+                g.appendChild(text)
+                
+                publicVar.canvas.appendChild(g)
+                
+                // 将p删除
+                p.remove()
+                // 解绑事件
+                self.el.removeEventListener('mousedown', textMousedown, false)
+            }
+            // 新增mosuedown事件
+            this.el.addEventListener('mousedown', textMousedown, false)
+
+
+            p.addEventListener('keydown', keydown, false)
+
+            
         }
 
         // Dropper (吸管)
@@ -496,7 +581,25 @@
             第四中情况, 画的为正圆, 且圆心坐标为按下点坐标, cx, cy 各扩大两倍
 
 ---------------------------------------------------------------------------------------------
+    文本绘制 实现思路:
+        在svg中文字绘制采用text元素, x y分别代表文字的显示横纵位置, 需要注意的是
+        y值需要特殊对待, 因为文字是底边与y值对齐
+            生成input框或者采用其他标签, 利用h5的contenteditable 来让其可编辑
+                input 无法显示换行 弃
+                p or textarea
+                textarea 高度值不好计算
+                最后采用 p
+            
+            需要解决的问题:
+                svg文本能力较弱, 不支持多行, 怎么处理
+                    - text 标签需要另一个标签的包裹 g
+                    - 采用多个text标签 意味着需要正则匹配回车, 截取成数组, 对数组进行遍历, 然后生成text, x不变 y*n 
+                p标签无限回车,导致超出内容区, 如何优雅处理, 
+                p应该插入哪里, 才更方便操作
+                
+            
 
+    
 ---------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------

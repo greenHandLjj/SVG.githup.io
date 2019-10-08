@@ -1,7 +1,7 @@
 @import './reset.css';
 @import './header.css';
 @import './main.css';
-@import './iconfont.css';
+/* @import './iconfont.css'; */
 
 #app{
     height: 100%;
