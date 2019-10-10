@@ -45,6 +45,10 @@ main > .canvas-wrap .core{
     overflow: hidden;
     /* transition: all .5s; */
 }
+main > .canvas-wrap .core::-webkit-scrollbar-button{
+    width: 10px;
+    background-color: red;
+}
 /* 鼠标样式 */
 main > .canvas-wrap .core{
     /* cursor: url('../images/logo.svg'); */
@@ -93,6 +97,26 @@ main > .canvas-wrap .core #canvas > svg .system-rect{
     stroke: blueviolet;
     stroke-dasharray: 5 5;
 }
+main > .canvas-wrap .core #canvas > svg .system-line,
+main > .canvas-wrap .core #canvas > svg .system-polyline{
+    stroke: blueviolet;
+    opacity: .7;
+}
+main > .canvas-wrap .core #canvas > svg .system-rect2,
+main > .canvas-wrap .core #canvas > svg .system-circle,
+main > .canvas-wrap .core #canvas > svg .system-path{
+    stroke: blueviolet;
+    opacity: .7;
+}
+main > .canvas-wrap .core #canvas > svg .system-virtual-rect{
+    stroke: blueviolet;
+    fill: hsla(240, 50%, 50%, 0);
+    cursor: pointer;
+}
+main > .canvas-wrap .core #canvas > svg .system-virtual-rect:hover{
+    fill: hsla(240, 50%, 50%, .4);
+}
+
 
 /* 辅助线 */
 .auxiliary-line.hide{
@@ -114,7 +138,6 @@ main > .canvas-wrap .core #canvas > svg .system-rect{
 }
 .auxiliary-line > .lineY{
     left: 100px;
-
     width: 1px;
     top: 0;
     bottom: 0;

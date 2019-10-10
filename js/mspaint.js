@@ -34,15 +34,8 @@
             this.elOffsetY = offset['top']
             // 事件列表 用来追踪和注销函数, 格式类型 { Select: {document: {}} }
             // this.handleList = {} 已失效
-
-            this.bindEvent(this.el)
-
-        }
-
-        // 绑定事件
-        bindEvent(dom) {
-            // 说了, 一切源于 click
-            dom.addEventListener('mousedown', (e) => {
+            // 核心点击事件, 为什么放置外部, 因为有一些特殊情况需要对齐进行解绑
+            this.handle = (e) => {
                 // 当前状态是什么, 根据状态来执行对应函数
                 let status = config.CanvasStatus,
                     // 鼠标按下的坐标点, 转换为 svg 坐标系
@@ -55,7 +48,15 @@
                     curY,
                     e
                 })
-            })
+            }
+
+            this.bindEvent(this.el)
+        }
+
+        // 绑定事件
+        bindEvent(dom) {
+            // 说了, 一切源于 click
+            dom.addEventListener('mousedown', this.handle, false)
         }
 
         // Select (选择)
@@ -74,7 +75,7 @@
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
                 // 标记已经移动, 可以创建节点
-                isMove ++
+                isMove++
                 // 具体思路, 请滑至底部
                 if (newX > curX) {
                     // console.log(curX, newX)
@@ -99,8 +100,8 @@
                 }
 
                 // 只触发一次
-                if(isMove === 1){
-                    publicVar.canvas.appendChild(virtualSvg) 
+                if (isMove === 1) {
+                    publicVar.canvas.appendChild(virtualSvg)
                 }
 
             }
@@ -121,32 +122,40 @@
             let move, up,
                 self = this,
                 isMove = 0,
-                polyline = Tool.createSvgEl('polyline'),
+                virtualPolyline = Tool.createSvgEl('polyline'),
                 points = `${curX} ${curY}` // 起点
 
-            polyline.setAttribute('points', points)
-            polyline.setAttribute('stroke', '#000')
-            polyline.setAttribute('fill', 'none')
+            virtualPolyline.setAttribute('class', 'system-polyline')
+            virtualPolyline.setAttribute('points', points)
+            virtualPolyline.setAttribute('stroke', '#000')
+            virtualPolyline.setAttribute('fill', 'none')
 
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
 
-                isMove ++
-                points = polyline.getAttribute('points')
+                isMove++
+                points = virtualPolyline.getAttribute('points')
                 points += `, ${newX} ${newY}`
-                polyline.setAttribute('points', points)
+                virtualPolyline.setAttribute('points', points)
 
-                if(isMove === 1){
+                if (isMove === 1) {
                     // 插入节点
-                    publicVar.canvas.appendChild(polyline)
+                    publicVar.canvas.appendChild(virtualPolyline)
                 }
             }
 
             up = function (e) {
                 document.removeEventListener('mousemove', move, false)
                 document.removeEventListener('mouseup', up, false)
+                // 没有移动, 不应该创建
+                if (isMove === 0) { return }
+                // 虚拟节点的删除和实际节点的插入
+                let polyline = virtualPolyline.cloneNode()
+                polyline.setAttribute('class', '')
+                publicVar.canvas.appendChild(polyline)
+                virtualPolyline.remove()
             }
 
             document.addEventListener('mousemove', move, false)
@@ -158,32 +167,41 @@
             let move, up,
                 self = this,
                 isMove = 0,
-                line = Tool.createSvgEl('line')
+                virtualLine = Tool.createSvgEl('line')
 
-            line.setAttribute('x1', curX)
-            line.setAttribute('y1', curY)
+            // 定义以system- 开头的类名都为图形预览
+            virtualLine.setAttribute('class', 'system-line')
+            virtualLine.setAttribute('x1', curX)
+            virtualLine.setAttribute('y1', curY)
             // 默认都是当前点, 防止取默认值, 0, 0
-            line.setAttribute('x2', curX)
-            line.setAttribute('y2', curY)
-            line.setAttribute('stroke', '#000')
+            virtualLine.setAttribute('x2', curX)
+            virtualLine.setAttribute('y2', curY)
+            virtualLine.setAttribute('stroke', '#000')
 
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
-                isMove ++
-                line.setAttribute('x2', newX)
-                line.setAttribute('y2', newY)
 
-                if(isMove === 1){
-                    // 插入节点
-                    publicVar.canvas.appendChild(line)
+                isMove++
+                virtualLine.setAttribute('x2', newX)
+                virtualLine.setAttribute('y2', newY)
+
+                if (isMove === 1) { // 只有在点击鼠标并且移动后, 才应该创建元素, 而不是一点击就立马创建
+                    publicVar.canvas.appendChild(virtualLine)
                 }
             }
 
             up = function (e) {
                 document.removeEventListener('mousemove', move, false)
                 document.removeEventListener('mouseup', up, false)
+                // 没有移动, 不应该创建
+                if (isMove === 0) { return }
+                // 移出虚拟节点, 插入实际节点, 先插入后删除, mutationobserver, 对同一个dom同时进行删除和插入操作的时候, 只会检测到一个变化
+                let line = virtualLine.cloneNode()
+                line.setAttribute('class', '')
+                publicVar.canvas.appendChild(line)
+                virtualLine.remove()
             }
 
             document.addEventListener('mousemove', move, false)
@@ -196,46 +214,48 @@
             let move, up,
                 self = this,
                 isMove = 0,
-                rect = Tool.createSvgEl('rect')
+                virtualRect = Tool.createSvgEl('rect')
 
-            rect.setAttribute('x', curX)
-            rect.setAttribute('y', curY)
+            // 定义内置类名
+            virtualRect.setAttribute('class', 'system-rect2')
+            virtualRect.setAttribute('x', curX)
+            virtualRect.setAttribute('y', curY)
             // 默认不填充, 后面需要填充变量
-            rect.setAttribute('fill', 'rgba(0, 0, 0, 0)')
-            rect.setAttribute('stroke', '#000')
+            virtualRect.setAttribute('fill', 'rgba(0, 0, 0, 0)')
+            virtualRect.setAttribute('stroke', '#000')
 
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero
 
-                isMove ++
+                isMove++
                 // 具体思路, 请滑至底部
                 if (newX > curX) {
                     // console.log(curX, newX)
-                    rect.setAttribute('x', curX)
+                    virtualRect.setAttribute('x', curX)
                     // console.log( "x: " + curX, 
                     //             "width: "+ Math.abs((newX + publicVar.pointXZero) - (curX + publicVar.pointXZero))
                     // )
                     // (newX + publicVar.pointXZero) - (curX + publicVar.pointXZero)
 
-                    rect.setAttribute('width', newX - curX)
+                    virtualRect.setAttribute('width', newX - curX)
                 } else {
-                    rect.setAttribute('x', newX)
-                    rect.setAttribute('width', curX - newX)
+                    virtualRect.setAttribute('x', newX)
+                    virtualRect.setAttribute('width', curX - newX)
                 }
 
                 if (newY > curY) {
-                    rect.setAttribute('y', curY)
-                    rect.setAttribute('height', newY - curY)
+                    virtualRect.setAttribute('y', curY)
+                    virtualRect.setAttribute('height', newY - curY)
                 } else {
-                    rect.setAttribute('y', newY)
-                    rect.setAttribute('height', curY - newY)
+                    virtualRect.setAttribute('y', newY)
+                    virtualRect.setAttribute('height', curY - newY)
                 }
 
-                if(isMove === 1){
+                if (isMove === 1) {
                     // 插入节点
-                    publicVar.canvas.appendChild(rect)
+                    publicVar.canvas.appendChild(virtualRect)
                 }
 
             }
@@ -243,6 +263,13 @@
             up = function (e) {
                 document.removeEventListener('mousemove', move, false)
                 document.removeEventListener('mouseup', up, false)
+                // 没有移动, 不应该创建
+                if (isMove === 0) { return }
+                // 
+                let rect = virtualRect.cloneNode()
+                rect.setAttribute('class', '')
+                publicVar.canvas.appendChild(rect)
+                virtualRect.remove()
             }
 
             document.addEventListener('mousemove', move, false)
@@ -257,62 +284,62 @@
                 ctrl = false, // 键盘事件
                 shift = false, // 键盘事件
                 alt = false, // 键盘事件
-                ellipse = Tool.createSvgEl('ellipse')
+                virtualEllipse = Tool.createSvgEl('ellipse')
             // ellipse  cx cy rx ry
             // circle   cx cy r
-            ellipse.setAttribute('fill', 'none')
-            ellipse.setAttribute('stroke', '#000')
-            // ellipse.setAttribute('cx', curX)
-            // ellipse.setAttribute('cy', curY)
-            
+            virtualEllipse.setAttribute('class', 'system-circle')
+            virtualEllipse.setAttribute('fill', 'none')
+            virtualEllipse.setAttribute('stroke', '#000')
+            // virtualEllipse.setAttribute('cx', curX)
+            // virtualEllipse.setAttribute('cy', curY)
+
             move = function (e) {
                 // 转为 SVG 坐标系
                 let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
                     newY = e.clientY - self.elOffsetY - publicVar.pointYZero,
                     cx, cy, rx, ry
-                
+
                 cx = Math.abs(newX) - Math.abs(curX)
                 cy = Math.abs(newY) - Math.abs(curY)
-                isMove ++
-
-                if(shift){ // 只有画正圆的时候才会计算, 下面计算公式依据勾股定理
-                    ry = rx = Math.sqrt( Math.pow((curX + cx / 2) - newX, 2) + Math.pow((curY + cy / 2) - newY, 2) )
+                isMove++
+                if (shift) { // 只有画正圆的时候才会计算, 下面计算公式依据勾股定理
+                    ry = rx = Math.sqrt(Math.pow((curX + cx / 2) - newX, 2) + Math.pow((curY + cy / 2) - newY, 2))
                 }
 
                 // 键盘事件条件判断
-                if ( (!ctrl && !shift && !alt) || ctrl ) { // 什么都没按
+                if ((!ctrl && !shift && !alt) || ctrl) { // 什么都没按
                     // console.log(cx)
-                    ellipse.setAttribute('cx', curX + cx / 2)
-                    ellipse.setAttribute('rx', Math.abs(cx / 2))
+                    virtualEllipse.setAttribute('cx', curX + cx / 2)
+                    virtualEllipse.setAttribute('rx', Math.abs(cx / 2))
 
-                    ellipse.setAttribute('cy', curY + cy / 2)
-                    ellipse.setAttribute('ry', Math.abs(cy / 2))
-                }else if(!ctrl && !shift && alt) { // 按下alt键, 圆心改为鼠标当前点
-                    ellipse.setAttribute('cx', curX + cx)
-                    ellipse.setAttribute('rx', Math.abs(cx))
+                    virtualEllipse.setAttribute('cy', curY + cy / 2)
+                    virtualEllipse.setAttribute('ry', Math.abs(cy / 2))
+                } else if (!ctrl && !shift && alt) { // 按下alt键, 圆心改为鼠标当前点
+                    virtualEllipse.setAttribute('cx', curX + cx)
+                    virtualEllipse.setAttribute('rx', Math.abs(cx))
 
-                    ellipse.setAttribute('cy', curY + cy)
-                    ellipse.setAttribute('ry', Math.abs(cy))
-                }else if(!ctrl && shift && !alt) { // 按下shift键 画正圆, 以x轴为基准
+                    virtualEllipse.setAttribute('cy', curY + cy)
+                    virtualEllipse.setAttribute('ry', Math.abs(cy))
+                } else if (!ctrl && shift && !alt) { // 按下shift键 画正圆, 以x轴为基准
                     // rx ry 保持一致, 求鼠标中心点坐标到移动点坐标的直线距离
-                    ellipse.setAttribute('cx', curX + cx / 2)
-                    ellipse.setAttribute('rx', rx)
+                    virtualEllipse.setAttribute('cx', curX + cx / 2)
+                    virtualEllipse.setAttribute('rx', rx)
 
-                    ellipse.setAttribute('cy', curY + cy / 2)
-                    ellipse.setAttribute('ry', ry)
-                }else{ // 其余情况全部画正圆, 坐标点为按下点
+                    virtualEllipse.setAttribute('cy', curY + cy / 2)
+                    virtualEllipse.setAttribute('ry', ry)
+                } else { // 其余情况全部画正圆, 坐标点为按下点
 
-                    ellipse.setAttribute('cx', curX)
+                    virtualEllipse.setAttribute('cx', curX)
                     // 为何扩大两倍？ 为了跟上鼠标位置
-                    ellipse.setAttribute('rx', rx * 2)
+                    virtualEllipse.setAttribute('rx', rx * 2)
 
-                    ellipse.setAttribute('cy', curY)
-                    ellipse.setAttribute('ry', ry * 2)
+                    virtualEllipse.setAttribute('cy', curY)
+                    virtualEllipse.setAttribute('ry', ry * 2)
                 }
 
-                if(isMove === 1){
+                if (isMove === 1) {
                     // 插入节点
-                    publicVar.canvas.appendChild(ellipse)
+                    publicVar.canvas.appendChild(virtualEllipse)
                 }
 
             }
@@ -322,6 +349,13 @@
                 document.removeEventListener('mouseup', up, false)
                 document.removeEventListener('keydown', keyDown, false)
                 document.removeEventListener('keyup', keyUp, false)
+                // 没有移动, 不应该创建
+                if (isMove === 0) { return }
+                // 
+                let ellipse = virtualEllipse.cloneNode()
+                ellipse.setAttribute('class', '')
+                publicVar.canvas.appendChild(ellipse)
+                virtualEllipse.remove()
             }
 
             // 键盘事件
@@ -365,9 +399,153 @@
             document.addEventListener('keyup', keyUp, false)
         }
 
-        // Path (多路径绘制)
+        // Path (复杂路径绘制)
         Path({ curX, curY } = {}) {
+            let move, down,
+                d = '',
+                dArr = [
+                    {
+                        'M': {
+                            'x': curX,
+                            'y': curY
+                        }
+                    },
+                    {
+                        'L': {
+                            'x': curX,
+                            'y': curY
+                        }
+                    }],
+                dArrLen = dArr.length, // 记录当前数组长度
+                // 记录当前是第几条线段, 默认是1
+                indexLine = 1,
+                self = this,
+                isMove = 0,
+                virtualPath = Tool.createSvgEl('path'),
+                // 虚拟方框, 标记点击位置
+                vritualRectArr = [Tool.createSvgEl('rect')]
 
+            // 解绑当前画布区的原点击事件
+            this.el.removeEventListener('mousedown', this.handle, false)
+
+            // 定义虚拟方框
+            vritualRectArr[0].setAttribute('class', 'system-virtual-rect')
+            vritualRectArr[0].setAttribute('x', curX - 4)
+            vritualRectArr[0].setAttribute('y', curY - 4)
+            vritualRectArr[0].setAttribute('width', 8)
+            vritualRectArr[0].setAttribute('height', 8)
+
+            // 定义以system- 开头的类名都为图形预览
+            virtualPath.setAttribute('class', 'system-path')
+            virtualPath.setAttribute('stroke', '#000')
+            virtualPath.setAttribute('fill', 'rgba(0, 0, 0, 0)')
+            // virtualPath.setAttribute('d', d)
+
+            move = function (e) {
+                // 转为 SVG 坐标系
+                let newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
+                    newY = e.clientY - self.elOffsetY - publicVar.pointYZero
+                // 每次移动时, d属性值需要清空
+                d = ''
+                // 记录次数, 数值为1, 就插入节点 代表只插入一次
+                isMove++
+
+                for (let i = 0; i < dArrLen; i++) {
+                    let key = Object.getOwnPropertyNames(dArr[i]) // M L... key --- M
+
+                    // 修改置顶属性值
+                    if (i === indexLine) {
+                        dArr[i][key].x = newX
+                        dArr[i][key].y = newY
+                    }
+
+                    d += `${key} ${dArr[i][key].x} ${dArr[i][key].y} ` // M xxx xxxx 得出类似这样的字符
+                }
+
+                virtualPath.setAttribute('d', d)
+
+                if (isMove === 1) { // 只有在点击鼠标并且移动后, 才应该创建元素, 而不是一点击就立马创建
+                    publicVar.canvas.appendChild(virtualPath)
+                    publicVar.canvas.appendChild(vritualRectArr[0])
+                }
+            }
+
+            down = function (e) {
+                // 转为 SVG 坐标系
+                let n,
+                    pointDel, //页面节点信息
+                    newX = e.clientX - self.elOffsetX - publicVar.pointXZero,
+                    newY = e.clientY - self.elOffsetY - publicVar.pointYZero
+
+                // 说明点击到标记点, 结束路径, 恢复原画图区点击事件, 生成真正的path, 放置svg中
+                if (e.target.classList.contains('system-virtual-rect')) {
+                    // 解绑事件
+                    document.removeEventListener('mousemove', move, false)
+                    self.el.removeEventListener('mousedown', down, false)
+                    // 恢复事件
+                    self.el.addEventListener('mousedown', self.handle, false)
+
+                    // 如果点击点为最后一个标记点, 意味着结束绘制
+                    if( vritualRectArr.indexOf(e.target) === vritualRectArr.length - 1){
+                        dArr.splice(dArrLen - 1)
+                        dArrLen = dArr.length
+                    }
+                    d = ''
+                    // 获取当前点的target坐标
+                    for (let i = 0; i < dArrLen; i++) {
+                        let key = Object.getOwnPropertyNames(dArr[i]) // M L... key --- M
+    
+                        // 修改置顶属性值
+                        if (i === indexLine) {
+                            dArr[i][key].x = parseInt(e.target.getAttribute('x')) + 4
+                            dArr[i][key].y = parseInt(e.target.getAttribute('y')) + 4
+                            // console.log(e.target.getAttribute('x'), e.target.getAttribute('y'), dArr[0]['M'])
+                        }
+
+                        d += `${key} ${dArr[i][key].x} ${dArr[i][key].y} ` // M xxx xxxx 得出类似这样的字符
+                    }
+                    // 生成path并放置
+                    let path = virtualPath.cloneNode()
+                    path.setAttribute('d', d)
+                    path.setAttribute('class', '')
+                    publicVar.canvas.appendChild(path)
+
+                    // 清空所有虚拟节点
+                    virtualPath.remove()
+                    vritualRectArr.forEach(item => item.remove())
+
+                    e.stopPropagation()
+                    return
+                } else {
+                    pointDel = {
+                        'L': {
+                            'x': newX,
+                            'y': newY
+                        }
+                    }
+                }
+                // 每次点击意味着属性值添加
+                dArr.push(pointDel)
+                dArrLen = dArr.length   // 重新记录当前数组长度
+                indexLine++             // 需要更改的值的索引
+
+                // 生产新的点击位置标记
+                vritualRectArr.push(Tool.createSvgEl('rect'))
+                // 记录长度
+                n = vritualRectArr.length - 1
+                vritualRectArr[n].setAttribute('class', 'system-virtual-rect')
+                vritualRectArr[n].setAttribute('x', newX - 4)
+                vritualRectArr[n].setAttribute('y', newY - 4)
+                vritualRectArr[n].setAttribute('width', 8)
+                vritualRectArr[n].setAttribute('height', 8)
+                publicVar.canvas.appendChild(vritualRectArr[n])
+
+            }
+
+            document.addEventListener('mousemove', move, false)
+            // 重载点击事件
+            this.el.addEventListener('mousedown', down, false)
+            // document.addEventListener('mouseup', up, false)
         }
 
         // Geometry (几何绘制)
@@ -384,7 +562,7 @@
                 g = Tool.createSvgEl('g')
 
             // 判断页面是否含有该标签
-            if(document.querySelector('#svg-p') !== null){
+            if (document.querySelector('#svg-p') !== null) {
                 return
             }
 
@@ -404,13 +582,13 @@
             }, 10);
 
             // 为什么用keydown，因为要阻止document原本绑定的事件
-            keydown = function(e) {
+            keydown = function (e) {
                 // this.innerText                
                 e.stopPropagation()
             }
 
             // 截取, 创建, 插入, 删除 
-            textMousedown = function(e) {
+            textMousedown = function (e) {
                 let text = Tool.createSvgEl('text'),
                     str = p.innerText
                 // 设置属性
@@ -422,9 +600,9 @@
                 text.innerHTML = str
 
                 g.appendChild(text)
-                
+
                 publicVar.canvas.appendChild(g)
-                
+
                 // 将p删除
                 p.remove()
                 // 解绑事件
@@ -436,7 +614,7 @@
 
             p.addEventListener('keydown', keydown, false)
 
-            
+
         }
 
         // Dropper (吸管)
@@ -556,16 +734,16 @@
                         if (newX > curX) {
                             if(!ctrl && !shift && !alt){
                                 ellipse.setAttribute('cx', (newX - curX) / 2)
-                                ellipse.setAttribute('rx', (newX - curX) / 2)    
+                                ellipse.setAttribute('rx', (newX - curX) / 2)
                             }
                         } else {
                             if(!ctrl && !shift && !alt){
                                 ellipse.setAttribute('cx', (curX - newX) / 2)
-                                ellipse.setAttribute('rx', (curX - newX) / 2)    
+                                ellipse.setAttribute('rx', (curX - newX) / 2)
                             }
                             ellipse.setAttribute('rx', (curX - newX) / 2)
                         }
-                    3代: 
+                    3代:
                         if (!ctrl && !shift && !alt) {
                             cx = Math.abs(newX) - Math.abs(curX)
                             // console.log(cx)
@@ -589,18 +767,54 @@
                 p or textarea
                 textarea 高度值不好计算
                 最后采用 p
-            
+
             需要解决的问题:
                 svg文本能力较弱, 不支持多行, 怎么处理
                     - text 标签需要另一个标签的包裹 g
-                    - 采用多个text标签 意味着需要正则匹配回车, 截取成数组, 对数组进行遍历, 然后生成text, x不变 y*n 
-                p标签无限回车,导致超出内容区, 如何优雅处理, 
+                    - 采用多个text标签 意味着需要正则匹配回车, 截取成数组, 对数组进行遍历, 然后生成text, x不变 y*n
+                p标签无限回车,导致超出内容区, 如何优雅处理,
                 p应该插入哪里, 才更方便操作
-                
-            
 
-    
 ---------------------------------------------------------------------------------------------
+    path 复杂路径绘制 实现思路:
+        基于线段, 超级版本
+        1. 元素选择 -- path, 因为后面可能会加入贝塞尔曲线, 所以不能用polyline
+        2. 事件监听
+            鼠标按下 -- 鼠标移动 -- 鼠标抬起
+
+            鼠标按下
+                画布区的原点击事件触发, 获取坐标点, 生成虚拟path, 
+                因为path的d属性比较复杂, 操作字符比较麻烦, 而且不直观, 所以采用数组,
+                每一项中存入一个对象, 管理当前对应的操作 M L Z等
+                在该对象中又有一个对象记录当前操作符的信息, 比方说x, y坐标
+                M : {
+                    x: xxx,
+                    y: xxx
+                }
+                初始化path后, 在进行第二个虚拟rect的生成, 这个矩形框主要是为了点击来做判定, 你路径在哪里结束
+
+            鼠标移动
+                d = "M xx xx L xx xx"
+                移动时, 改变的就是最后一个属性值, 这也是前面利用数组来存储的原因
+                对数组进行遍历, 找到需要操作的属性值, 对齐进行更改, 不需要操作的值
+                直接赋给 d
+                d += `${key} ${dArr[i][key].x} ${dArr[i][key].y}
+                再将d 属性重新赋值给虚拟path
+
+                这就实现了可视化折线的动态绘制
+
+            鼠标点击
+                1. 重载整个画布区的点击事件, 改为path专用的处理函数
+                2. 判断当前是否点击到了标记方块
+                    2.1 否 -- 生成新的 L 属性, 加入 dArr 数组中, 改变下一次移动要操作的索引
+                        以及再次生成标记点
+                    2.2 是
+                        2.2.1 解绑事件, 重新注册画布原点击事件
+                        2.2.2 生成真正的path, 计算属性值, 插入节点
+                        2.2.3 移除所有虚拟节点                        
+                3. 点击到了画布区域以外的地方
+                    执行2.2 操作 
+
 ---------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------
