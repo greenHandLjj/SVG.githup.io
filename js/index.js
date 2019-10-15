@@ -630,7 +630,8 @@ template:
         item.addEventListener('mouseleave', leave, false)
         // 双击事件
         item.addEventListener('mousedown', function() {
-            new SvgDetails(svgRel)
+            // new SvgDetails(svgRel)
+            window.a = new SVGLineElementL(svgRel)
         })
         // 点击事件
         // item.addEventListener('mousedown', , false)

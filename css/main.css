@@ -188,7 +188,24 @@ main > .canvas-wrap .float-window .selected-ele{
     /* padding-right: 20px; */
 }
 main > .canvas-wrap .float-window .item-details{
-
+    display: grid;
+    border: 1px solid red;
+    grid-template-columns: repeat(4, 25%);
+    grid-template-rows: auto;
+}
+main > .canvas-wrap .float-window .item-details > div{
+    /* width: 20px;
+    height: 20px; */
+    /* background-color: crimson; */
+}
+main > .canvas-wrap .float-window .item-details > div > span{
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    text-shadow: 1px 1px 0px rgba(0, 0, 0, .5);
+}
+main > .canvas-wrap .float-window .item-details > div > span::first-letter{
+    text-transform: uppercase;
 }
 /* 关闭按钮 */
 main > .canvas-wrap .float-window .close{
@@ -296,7 +313,7 @@ main .picture-layer .list .item .clock{
     cursor: pointer;
 }
 
-/* 文本输入时， 生成的textarea */
+/* 文本输入时， 生成的p */
 #svg-p{
     position: absolute;
     /* width: 200px; */

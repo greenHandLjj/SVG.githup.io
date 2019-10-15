@@ -24,40 +24,40 @@
 */
 
 class SvgDetails {
-    constructor(svg) {
-        let config = {
-            set(target, key, value) {
-
-                return target[key] = value
-            },
-            get(target, key) {
-                console.log('gettting', key)
-                return target[key]
-            }
+    // 属性白名单
+    static filterAttr = ['x',
+        'y',
+        'width',
+        'height',
+        'fill',
+        'stroke',
+        'stroke-opacity',
+        'opacity',
+        'fill-opacity',
+        'stroke-width',
+        'cx',
+        'cy',
+        'rx',
+        'ry',
+        'x1',
+        'x2',
+        'y1',
+        'y2'
+    ];
+    static config = {
+        set(target, key, value) {
+            console.log("你想set我: ", key, value)
+            return target[key] = value
+        },
+        get(target, key) {
+            return target[key]
         }
-        // 属性白名单
-        this.filterAttr = ['x',
-            'y',
-            'width',
-            'height',
-            'fill',
-            'stroke',
-            'stroke-opacity',
-            'opacity',
-            'fill-opacity',
-            'stroke-width',
-            'cx',
-            'cy',
-            'rx',
-            'ry',
-            'x1',
-            'x2',
-            'y1',
-            'y2'
-        ]
+    };
+    svgData = new Proxy({}, config);
+       
+    constructor(svg) {
         // 不接收类名, 直接引用传递
         this.svg = svg
-        this.svgData = new Proxy({}, config)
 
         this.writeData(svg)
     }
@@ -67,11 +67,11 @@ class SvgDetails {
             attrName
         for (let prop of attr) {
             attrName = prop.nodeName
-            if (this.filterAttr.includes(attrName)) {
+            if (SvgDetails.filterAttr.includes(attrName)) {
                 this.svgData[attrName] = prop.nodeValue
             }
         }
-
     }
 
 }
+
