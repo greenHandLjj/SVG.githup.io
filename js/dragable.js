@@ -15,7 +15,7 @@
 
 class DomDrag {
     constructor ({el, boundary}) {
-        this.el = Tool.selectedDom(el)
+        this.el = el instanceof Element ? el : Tool.selectedDom(el)
 
         // 其相对定位的父级元素, 如果没有找到， 那么相当于默认对body
         this.relativeParent = Tool.getRelativeParent(this.el)
@@ -27,10 +27,16 @@ class DomDrag {
         this.elW = this.el.offsetWidth
         this.elH = this.el.offsetHeight
         // 获取当前元素视觉可见的距离左，上边距
-        ;({left: this.elL, top: this.elT} = this.el.getBoundingClientRect())
+        ;({left: this.elL, top: this.elT} = this.relativeParent.getBoundingClientRect())
 
         // 边界元素, 如果传递false, 将不进行边界检测， 否则默认值相对于 window
-        this.boundary = typeof boundary === "string" ? Tool.selectedDom(boundary) : window
+        if(boundary instanceof Element) {
+            this.boundary = boundary
+        }else if(typeof boundary === "string") {
+            this.boundary = Tool.selectedDom(boundary)
+        }else{
+            this.boundary = window
+        }
 
         // 边界元素宽度， 同样用于边界检测
         if(this.boundary === window){
@@ -78,7 +84,6 @@ class DomDrag {
 
         this.move = e => {
             let el = this.el
-
 
             // 最差的办法， 暂时使用
             this.boundaryW = this.boundary.offsetWidth

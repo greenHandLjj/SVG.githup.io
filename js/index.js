@@ -553,7 +553,11 @@ template:
                         rel: firstNode
                     }), list.children[0])
                 }
-
+                // 元素已经被插入, 执行相应操作
+                insertAfter({
+                    nodeName: firstNodeName,
+                    rel: firstNode
+                })
             }
 
         })
@@ -628,10 +632,10 @@ template:
         // 鼠标移入移出
         item.addEventListener('mouseenter', enter, false)
         item.addEventListener('mouseleave', leave, false)
-        // 双击事件
-        item.addEventListener('mousedown', function() {
+        // 点击事件
+        item.addEventListener('mousedown', function () {
             // new SvgDetails(svgRel)
-            window.a = new SVGLineElementL(svgRel)
+            // window.a = new SVGLineElementL(svgRel)
         })
         // 点击事件
         // item.addEventListener('mousedown', , false)
@@ -645,6 +649,28 @@ template:
         childList: true
     })
 
+    function insertAfter({ nodeName, rel }) {
+        // nodeName -- 元素名， rel -- 元素引用（元素实例）
+        console.log(rel)
+        switch (nodeName) {
+            case 'line':
+                new SVGLineElementL(rel)
+                break;
+            case 'rect':
+                break;
+            case 'image':
+                break;
+            case 'polyline':
+                break;
+            case 'path':
+                break;
+            case 'ellipse':
+                break;
+            case 'g':
+                break;
+        }
+
+    }
 
 })();
 

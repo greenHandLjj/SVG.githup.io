@@ -188,8 +188,8 @@ main > .canvas-wrap .float-window .selected-ele{
     /* padding-right: 20px; */
 }
 main > .canvas-wrap .float-window .item-details{
+    margin-top: 10px;
     display: grid;
-    border: 1px solid red;
     grid-template-columns: repeat(4, 25%);
     grid-template-rows: auto;
 }
@@ -197,6 +197,14 @@ main > .canvas-wrap .float-window .item-details > div{
     /* width: 20px;
     height: 20px; */
     /* background-color: crimson; */
+}
+main > .canvas-wrap .float-window .item-details > div > P{
+    text-align: center;
+    margin: 2px;
+    font-size: 14px;
+    color: #232323;
+    cursor: text;
+    background-color: #f5f5f5;
 }
 main > .canvas-wrap .float-window .item-details > div > span{
     display: block;
@@ -319,4 +327,19 @@ main .picture-layer .list .item .clock{
     /* width: 200px; */
     outline: 1px solid blueviolet;
     background-color: rgba(0, 0, 0, 0);
+}
+
+/* 虚拟小方块, 用于拖拽实现更改svg元素的属性可视化操作 */
+.view-rect{
+    box-sizing: border-box;
+    position: absolute;
+    z-index: 888;
+    border: 1px solid blueviolet;
+    width: 8px;
+    height: 8px;
+    cursor: pointer;
+}
+.view-rect:hover,
+.view-rect:active{
+    background-color: hsla(240, 50%, 50%, .4);
 }

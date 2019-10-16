@@ -44,12 +44,18 @@ const publicVar = new Proxy(truePublicVar, {
         return target[prop]
     },
     set: function(target, prop, value) {
-
+        // 处理辅助线响应对齐
         if(prop === 'pointXZero' || prop === 'pointYZero'){
             target.auxiliaryLine()
         }
+        // 处理当接受到该属性值后应该渲染控制面板
+        if(prop === 'svgDetails'){
+            
+        }
 
         target[prop] = value
+
+        return true
     }
 })
 
