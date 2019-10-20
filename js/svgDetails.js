@@ -80,11 +80,15 @@
 (function (window) {
     let config = {
         get(target, key) {
+            // console.log('reading...', key)
             return target[key]
         },
         set(target, key, value) {
-            
+
             // to do...
+            // console.log(key, value)
+            publicVar.svgDetails && publicVar.svgDetails.setAttr(key, value)
+
             return target[key] = value
         }
     }
@@ -92,13 +96,17 @@
     let renderWrap = document.querySelector('.item-details')
 
     // 渲染属性
-    let render = function(data) {
+    let render = function (data) {
         let div, p, span
         // 初始化之前， 清空renderWrap
         renderWrap.innerHTML = ''
-        for(let prop in data){
+        for (let prop in data) {
             div = document.createElement('div')
-            p = document.createElement('p')
+            p = document.createElement('input')
+            // p.contentEditable = true
+            p.type = 'number'
+            p.setAttribute('data-attr', prop)
+            p.addEventListener('input', pOnInput, false)
             span = document.createElement('span')
 
             p.innerText = data[prop]
@@ -110,8 +118,23 @@
         }
     }
 
+    // p标签的 input 事件
+    let pOnInput = function(e) {
+        let prop = this.getAttribute('data-attr'),
+            value = this.innerText
+        if( value === "" ){
+
+        }
+
+        publicVar.svgDetails.svgData[prop] = value
+    }
+
     class SvgDetails {
-        constructor(attr) {
+        constructor(el, attr) {
+            // svg对象
+            this.svg = el
+
+            // 初始化
             this.init(attr)
         }
 
@@ -119,14 +142,29 @@
         init(attr) {
             this.svgData = new Proxy({}, config)
             // 属性初始化
-            for(let prop in attr){
+            for (let prop in attr) {
                 this.svgData[prop] = attr[prop]
             }
             // 渲染属性
             render(this.svgData)
         }
 
-     }
+        // 处理属性输入
+        setAttr() {
+            if (Object.prototype.toString.call(arguments[0]) === '[object Object]') {
+                let obj = arguments[0]
+                for (let prop in obj) {
+                    this.svg.setAttribute(prop, obj[prop])
+                }
+            } else if (arguments.length === 2) {
+                this.svg.setAttribute(arguments[0], arguments[1])
+                
+            } else {
+                throw ('参数类型错误, 请输入符合要求的参数类型 ---> ({width：200}) 或 (width, 200) ')
+            }
+        }
+
+    }
 
     // export
     window.SvgDetails = SvgDetails

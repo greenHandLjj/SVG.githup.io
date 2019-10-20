@@ -651,12 +651,13 @@ template:
 
     function insertAfter({ nodeName, rel }) {
         // nodeName -- 元素名， rel -- 元素引用（元素实例）
-        console.log(rel)
+        // console.log(rel)
         switch (nodeName) {
             case 'line':
                 new SVGLineElementL(rel)
                 break;
             case 'rect':
+                new SVGRectElementL(rel)
                 break;
             case 'image':
                 break;

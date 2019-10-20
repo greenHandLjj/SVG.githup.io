@@ -20,20 +20,6 @@ class SVGElementL {
 
     }
 
-    // 处理属性输入
-    setAttr() {
-        if (Object.prototype.toString.call(arguments[0]) === '[object Object]') {
-            let obj = arguments[0]
-            for (let prop in obj) {
-                this.svg.setAttribute(prop, obj[prop])
-            }
-        } else if (arguments.length === 2) {
-            this.svg.setAttribute(arguments[0], arguments[1])
-        } else {
-            throw ('参数类型错误, 请输入符合要求的参数类型 ---> ({width：200}) 或 (width, 200) ')
-        }
-    }
-
     // 创建可视化操作方形元素
     createViewRect({ x, y }) {
         // this 指向 被继承的子类的实例
@@ -81,7 +67,7 @@ class SVGLineElementL extends SVGElementL {
         // super.createViewRect({x: Number(this.x1), y: Number(this.y1)})
         // super.createViewRect({x: Number(this.x2), y: Number(this.y2)})
         // 注入属性值, 并且存入全局对象中
-        publicVar.svgDetails = new SvgDetails({
+        publicVar.svgDetails = new SvgDetails(this.svg, {
             x1: this.x1,
             y1: this.y1,
             x2: this.x2,
@@ -98,6 +84,13 @@ class SVGRectElementL extends SVGElementL {
         super()
         // 挂载
         this.svg = el
+
+        publicVar.svgDetails = new SvgDetails(this.svg, {
+            x: el.getAttribute('x'),
+            y: el.getAttribute('y'),
+            width: el.getAttribute('width'),
+            height: el.getAttribute('height')
+        })
     }
 
 }
